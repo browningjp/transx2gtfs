@@ -2,18 +2,16 @@ import os
 import pandas as pd
 import pyproj
 import warnings
-import io
 import urllib
-from zipfile import ZipFile
 import tempfile
 
 
-def _update_naptan_data(url="http://naptan.app.dft.gov.uk/DataRequest/Naptan.ashx?format=csv",
+def _update_naptan_data(url="https://beta-naptan.dft.gov.uk/Download/National/csv",
                        filepath=None):
     if filepath is None:
         temp_dir = tempfile.gettempdir()
         target_dir = os.path.join(temp_dir, 'transx2gtfs')
-        target_file = os.path.join(target_dir, "NaPTAN_data.zip")
+        target_file = os.path.join(target_dir, "Stops.csv")
 
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
@@ -36,7 +34,7 @@ def read_naptan_stops(naptan_fp=None):
     if naptan_fp is None:
         naptan_fp = os.path.join(tempfile.gettempdir(),
                                  'transx2gtfs',
-                                 'NaPTAN_data.zip')
+                                 'Stops.csv')
 
     max_attemps = 20
     i = 1
@@ -50,13 +48,7 @@ def read_naptan_stops(naptan_fp=None):
             raise ValueError("Could not update the stops data.\nMax attempts reached.")
         i += 1
 
-    # Read the stops from the zip
-    z = ZipFile(naptan_fp)
-
-    if 'Stops.csv' not in z.namelist():
-        raise ValueError("NaPTAN dataset did not contain stops!")
-
-    stops = pd.read_csv(io.BytesIO(z.read('Stops.csv')), encoding='latin1',
+    stops = pd.read_csv(naptan_fp, encoding='latin1',
                         low_memory=False)
 
     # Rename required columns into GTFS format
