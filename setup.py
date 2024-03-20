@@ -18,9 +18,9 @@ def read(*names, **kwargs):
         return fh.read()
 
 
-requirements = ['pandas',
-                'pyproj',
-                'untangle'
+requirements = ['pandas>0.24.1,<2.0',
+                'pyproj>=2.1.3',
+                'untangle>=1.1.1',
                 ]
 
 # read the contents of README file
